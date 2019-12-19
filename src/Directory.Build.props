@@ -1,0 +1,117 @@
+<Project>
+  <!--<Import Project="version.props" />-->
+
+  <!-- Folder layout -->
+  <PropertyGroup>
+    <IsBenchmarkProject Condition="$(MSBuildProjectName.ToLower().EndsWith('.benchmarks'))">true</IsBenchmarkProject>
+    <IsTestProject Condition="$(MSBuildProjectName.ToLower().Contains('.tests'))">true</IsTestProject>
+    <IsTestAssetProject Condition="$(RepoRelativeProjectDir.Contains('.resources'))">true</IsTestAssetProject>
+    <IsSampleProject Condition="$(MSBuildProjectName.ToLower().Contains('.samples.'))">true</IsSampleProject>
+    <IsTemplateProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.'))">true</IsTemplateProject>
+    <IsTemplatePackageProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.package'))">true</IsTemplatePackageProject>
+
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSource>false</IncludeSource>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <LangVersion>8.0</LangVersion>
+    <DefaultItemExcludes>$(DefaultItemExcludes);*.csproj.vspscc</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Product>CloudNimble.Extensions.Configuration.WebConfig</Product>
+    <PackageVersion>1.0.0-beta.1</PackageVersion>
+    <Authors>CloudNimble</Authors>
+    <Company>CloudNimble, Inc.</Company>
+    <RpmPackageVendor>CloudNimble</RpmPackageVendor>
+    <Copyright>Copyright © 2020 .NET Foundation and CloudNimble, Inc. All rights reserved.</Copyright>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <!-- The SPDX name for the source license. See https://spdx.org/licenses/. -->
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <!--
+      Suppress a warning about upcoming deprecation of PackageLicenseUrl. When embedding licenses are supported,
+      replace PackageLicenseUrl with PackageLicenseExpression.
+    -->
+    <NoWarn>$(NoWarn);NU5125;NU5048;NU5128;</NoWarn>
+    <!-- Suppress warnings about using SemVer 2.0. -->
+    <NoWarn>$(NoWarn);NU5105</NoWarn>
+
+    <!-- Contact email address for NuGet packages and Linux installers. -->
+    <MaintainerEmail>opensource@nimbleapps.cloud</MaintainerEmail>
+
+    <PackageIconUrl>https://go.microsoft.com/fwlink/?LinkID=288859</PackageIconUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>easyaf;frameworks;entity framework;</PackageTags>
+    <Serviceable>true</Serviceable>
+
+    <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
+    <RepositoryUrl>https://github.com/CloudNimble/WebConfigInDotNetCore.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <!-- Compilation options -->
+  <PropertyGroup>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+
+    <!-- Instructs the compiler to use SHA256 instead of SHA1 when adding file hashes to PDBs. -->
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+
+    <!-- Fixes a common error in targets implementing a NoBuild mode. -->
+    <BuildProjectReferences Condition=" '$(NoBuild)' == 'true' ">false</BuildProjectReferences>
+
+    <!-- Suppress warnings about uninstantiated classes. -->
+    <NoWarn>$(NoWarn);CA1812</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" $(IsTestProject) == 'true' ">
+    <NoWarn>$(NoWarn);CA1001;CA1707;CA2007;CA1801;CS1591</NoWarn>
+  </PropertyGroup>
+  
+    <PropertyGroup Condition=" $(IsSampleProject) == 'true' ">
+    <NoWarn>$(NoWarn);CA1001;CA1707;CA1716;CA1801;CA1822</NoWarn>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" ('$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '$(IsSampleProject)' != 'true' And '$(IsSampleProject)' != 'true') or '$(IsTemplatePackageProject)' == 'true' or $(Configuration) == 'Debug' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsTemplateProject)' == 'true' And '$(IsTemplatePackageProject)' != 'true'">
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <StandardTestTfms>netcoreapp3.1;net472</StandardTestTfms>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SkipDefaultEditorConfigAsAdditionalFile>true</SkipDefaultEditorConfigAsAdditionalFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('..\.editorconfig')">
+    <AdditionalFiles Include="..\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(IsTestProject) != 'true' and  $(IsSampleProject) != 'true'">
+    <!-- RWM: The code quality on the unit tests right now is not awesome, so let's skip checking it for now. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(IsTestProject) == 'true' ">
+    <PackageReference Include="FluentAssertions" Version="5.9.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="FluentAssertions.Analyzers" Version="0.11.4">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- RWM: Uncomment this to enable SourceLink debugging in your projects (Make sure you set RepositoryUrl and RepositoryType). -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+
+</Project>
